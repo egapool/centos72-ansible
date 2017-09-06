@@ -1,0 +1,16 @@
+---
+php_version: 5.6.19
+
+php_enable_opcache_configure: true
+
+php_dependencies:
+  - bison
+  - ibxml2
+  - libxml2-devel
+  - libjpeg
+  - libjpeg-devel
+  - libpng
+  - libpng-devel
+  - readline-devel
+  - libtidy-devel
+  - libxslt-devel
