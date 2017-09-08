@@ -1,6 +1,107 @@
 ---
-- name: Install libselinux-python
-  yum: name=libselinux-python state=present
+# 基本的なモジュールをインストール
+# zlib,openssl1.0.2,cURL7.55.1
 
-- name: Permissive selinux
-  selinux: policy=targeted state=permissive
+
+
+# - name: Install libselinux-python
+#   yum: name=libselinux-python state=present
+#
+# - name: Permissive selinux
+#   selinux: policy=targeted state=permissive
+
+- name: タイムゾーンをAsia/Tokyoに変更
+  command: timedatectl set-timezone Asia/Tokyo
+
+# zlib
+- name: Download http://zlib.net/zlib-1.2.11.tar.gz
+  get_url:
+    url: http://zlib.net/zlib-1.2.11.tar.gz
+    dest: /usr/local/src/zlib-1.2.11.tar.gz
+
+- name: open tar zlib-1.2.11
+  command: tar xvzf zlib-1.2.11.tar.gz chdir=/usr/local/src
+
+- name: configure zlib-1.2.11
+  command: ./configure chdir=/usr/local/src/zlib-1.2.11
+
+- name: make zlib-1.2.11
+  command: make chdir=/usr/local/src/zlib-1.2.11
+
+- name: make install zlib-1.2.11
+  command: make install chdir=/usr/local/src/zlib-1.2.11
+  become: yes
+
+# openssl1.0.2
+- name: Download https://www.openssl.org/source/openssl-1.0.2l.tar.gz
+  get_url:
+    url: https://www.openssl.org/source/openssl-1.0.2l.tar.gz
+    dest: /usr/local/src/openssl-1.0.2l.tar.gz
+
+- name: open tar openssl-1.0.2l.tar.gz
+  command: tar xvzf openssl-1.0.2l.tar.gz chdir=/usr/local/src
+
+- name: configure openssl-1.0.2l.tar.gz
+  command: ./config shared zlib chdir=/usr/local/src/openssl-1.0.2l
+
+- name: make openssl-1.0.2l
+  command: make chdir=/usr/local/src/openssl-1.0.2l
+
+- name: make install openssl-1.0.2l
+  command: make install chdir=/usr/local/src/openssl-1.0.2l
+  become: yes
+
+# /usr/local/lib64 を追加
+- name: /bin/openssl -> /usr/local/ssl/bin/opensslにsymlink貼る
+  command: mv /bin/openssl /bin/openssl-origin
+  become: yes
+
+- command: ln -s /usr/local/ssl/bin/openssl /bin/openssl
+  become: yes
+
+# cURLインストール
+- name: libssh2-devel インストール
+  yum:
+    name: libssh2-devel
+    state: installed
+
+- name: wget http://curl.haxx.se/download/curl-7.55.1.tar.gz
+  get_url:
+    url: http://curl.haxx.se/download/curl-7.55.1.tar.gz
+    dest: /usr/local/src/curl-7.55.1.tar.gz
+
+- name: curl-7.55.1.tar.gz 解凍
+  command: tar -xzf curl-7.55.1.tar.gz chdir=/usr/local/src
+
+- name: curl-7.55.1 configure
+  command: ./configure --prefix=/usr/local --with-ssl=/usr/local/ssl --enable-libcurl-option --with-libssh2 chdir=/usr/local/src/curl-7.55.1
+
+- name: make curl-7.55.1
+  command: make chdir=/usr/local/src/curl-7.55.1
+
+- name: make install curl-7.55.1
+  command: make install chdir=/usr/local/src/curl-7.55.1
+
+- name: ld.so.confにライブラリを追加
+  lineinfile:
+    path: /etc/ld.so.conf
+    line: '/usr/local/ssl/lib'
+    state: present
+    insertbefore: '^include '
+
+- name: d.so.confの設定を反映
+  command: ldconfig
+
+- name: PATH(vagrantユーザー)に追加
+  lineinfile:
+    path: /home/vagrant/.bash_profile
+    line: 'PATH=/usr/local/ssl/bin:$PATH'
+    state: present
+    insertbefore: '^export PATH'
+
+- name: PATH(rootユーザー)に追加2
+  lineinfile:
+    path: /root/.bash_profile
+    line: 'PATH=/usr/local/bin:/usr/local/ssl/bin:$PATH'
+    state: present
+    insertbefore: '^export PATH'

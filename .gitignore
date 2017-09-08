@@ -1,1 +1,5 @@
 .DS_Store
+.vagrant
+playbook/site.retry
+public_html/*
+!.gitkeep

@@ -1,0 +1,110 @@
+---
+
+- name: phpに必要なモジュールをyumインストール(時間かかります)
+  yum:
+    name: "{{ item }}"
+    state: installed
+  with_items:
+   - bison
+   - re2c
+   - httpd-devel
+   - libxml2-devel
+   - bzip2-devel
+   - libjpeg-devel
+   - libpng-devel
+   - libXpm-devel
+   - freetype
+   - freetype-devel
+   - recode-devel
+   - gmp-devel
+   - readline-devel
+   - php-imap
+   - php-mcrypt
+   - libc-client-devel
+   - libmcrypt
+   - libmcrypt-devel
+
+- file: path=/usr/local/src/phpmodule state=directory
+
+- name: imapモジュールをソースからインストール
+  get_url:
+    url: http://ftp.ntua.gr/pub/net/mail/imap/imap-2007f.tar.gz
+    dest: /usr/local/src/phpmodule/imap-2007f.tar.gz
+
+- command: tar xvzf imap-2007f.tar.gz chdir=/usr/local/src/phpmodule
+- command: make slx chdir=/usr/local/src/phpmodule/imap-2007f
+
+- name: ファイルを移動
+  shell: cp -p /usr/local/src/phpmodule/imap-2007f/c-client/*.h /usr/include
+
+- command: cp -p /usr/local/src/phpmodule/imap-2007f/c-client/c-client.a /usr/lib/libc-client.a
+
+- name: php ソースインストール
+  get_url:
+    url: http://jp2.php.net/get/php-7.1.5.tar.gz/from/this/mirror
+    dest: /usr/local/src/php-7.1.5.tar.gz
+
+- command: tar xvzf php-7.1.5.tar.gz chdir=/usr/local/src
+
+- name: configure php-7
+  command: chdir=/usr/local/src/php-7.1.5 ./configure --enable-fpm --enable-mbstring --enable-mbregex --with-gd --with-freetype-dir=/usr --with-jpeg-dir=/usr --with-png-dir=/usr --with-zlib-dir=/usr --with-iconv-dir=/usr --with-libxml-dir=/usr --enable-gd-native-ttf --enable-gd-jis-conv --enable-zip --with-curl=/usr/local --with-mcrypt=/usr --enable-bcmath --enable-sockets --enable-ftp --enable-opcache=no --with-openssl=/usr/local/ssl --with-xpm-dir=/usr --with-gettext --with-readline --with-imap=/usr/local/src/phpmodule/imap-2007f --with-imap-ssl=/usr/local/ssl --enable-mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd --with-mysql-sock=/tmp/mysql.sock
+
+- name: make php-7 (これも長いよ〜・・)
+  command: make chdir=/usr/local/src/php-7.1.5
+
+- name: make install php-7 (これも長いよ〜・・)
+  command: make install chdir=/usr/local/src/php-7.1.5
+
+- name: php.ini をしかるべき場所に移動
+  copy:
+    src: /usr/local/src/php-7.1.5/php.ini-development
+    dest: /usr/local/lib/php.ini
+
+# php.iniの設定変更
+# TODO:いずれは自前で用意したconfのテンプレートを使いたい
+- name: "php.iniを変更タイムゾーンを {{ timezone }} に"
+  lineinfile:
+    path: /usr/local/lib/php.ini
+    regexp: '^;date.timezone ='
+    line: 'date.timezone = {{ timezone }}"'
+
+- name: php-fpm.confを作成
+  copy:
+    src: /usr/local/etc/php-fpm.conf.default
+    dest: /usr/local/etc/php-fpm.conf
+
+- name: www.confを作成
+  copy:
+    src: /usr/local/etc/php-fpm.d/www.conf.default
+    dest: /usr/local/etc/php-fpm.d/www.conf
+
+# php-fpm.confの設定変更
+# TODO:いずれは自前で用意したconfのテンプレートを使いたい
+- name: "php-fpmの起動ユーザーを {{ php_fpm_user }} に変更"
+  lineinfile:
+    path: /usr/local/etc/php-fpm.d/www.conf
+    regexp: '^user = '
+    line: 'user = {{ php_fpm_user }}'
+
+- name: php-fpmの起動グループを "{{ php_fpm_group }}" に変更
+  lineinfile:
+    path: /usr/local/etc/php-fpm.d/www.conf
+    regexp: '^group = '
+    line: 'group = {{ php_fpm_group }}'
+
+- name: php-fpm.confの末尾のincludeのpathを適正化
+  lineinfile:
+    path: /usr/local/etc/php-fpm.conf
+    regexp: '^include='
+    line: 'include=etc/php-fpm.d/*.conf'
+
+- name: 起動スクリプトを移動
+  copy:
+    src: /usr/local/src/php-7.1.5/sapi/fpm/php-fpm.service
+    dest: /etc/systemd/system/php-fpm.service
+
+- name: php-fpmを起動して自動起動に登録
+  service:
+    name: php-fpm
+    state: started
+    enabled: yes

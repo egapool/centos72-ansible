@@ -5,13 +5,15 @@
 
   roles:
     - role: common
-    - role: repositries
-    - role: apache
-      apache_vhosts:
-        - {servername: "local.example.com", documentroot: "/var/www/html/example/public"}
-      apache_vhosts_ssl:
-        - {servername: "local.sslexample.com", documentroot: "/var/www/html/sslexample/public"}
-    - role: git
-    - { role: "phpenv", php_versin: "5.6.19"}
-    - { role: "mysql", mysql_versin: "5.6.22"}
-    - role: python
+    - role: php-fpm
+    
+    # - role: repositries
+    # - role: apache
+    #   apache_vhosts:
+    #     - {servername: "local.example.com", documentroot: "/var/www/html/example/public"}
+    #   apache_vhosts_ssl:
+    #     - {servername: "local.sslexample.com", documentroot: "/var/www/html/sslexample/public"}
+    # - role: git
+    # - { role: "phpenv", php_versin: "5.6.19"}
+    # - { role: "mysql", mysql_versin: "5.6.22"}
+    # - role: python
