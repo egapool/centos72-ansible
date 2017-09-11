@@ -92,6 +92,24 @@
     regexp: '^group = '
     line: 'group = {{ php_fpm_group }}'
 
+- name: 通信方法をUNIXソケットにする
+  lineinfile:
+    path: /usr/local/etc/php-fpm.d/www.conf
+    regexp: '^listen = '
+    line: 'listen = /var/run/php-fpm.sock'
+
+- name: ソケットのlisten.ownerを変更
+  lineinfile:
+    path: /usr/local/etc/php-fpm.d/www.conf
+    regexp: '^;listen.owner = '
+    line: 'listen.owner = nginx'
+
+- name: ソケットのlisten.groupを変更
+  lineinfile:
+    path: /usr/local/etc/php-fpm.d/www.conf
+    regexp: '^;listen.group = '
+    line: 'listen.group = nginx'
+
 - name: php-fpm.confの末尾のincludeのpathを適正化
   lineinfile:
     path: /usr/local/etc/php-fpm.conf

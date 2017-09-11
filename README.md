@@ -4,8 +4,8 @@
 
 * CentOS 7.2
 * Nginx *
-* PHP-FPM 7.*
-* MySQL 5.6.* or 5.7.*
+* PHP(FPM) 7.1.5
+* MySQL 5.6.*
 
 ## 使い方
 

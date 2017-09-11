@@ -1,0 +1,28 @@
+- name: generate ssl.key directory
+  file: "path={{nginx_ssl_path}} state=directory"
+
+- name: generate each servername's directory for ssl files
+  file: "path={{nginx_ssl_path}}/{{item.server_name}} state=directory"
+  with_items: '{{nginx_vhosts}}'
+  when: item.listen | match("^443")
+
+- name: generate server.key
+  command: "openssl genrsa -out {{nginx_ssl_path}}/{{item.server_name}}/server.key 2048"
+  args:
+    creates: "{{nginx_ssl_path}}/{{item.server_name}}/server.key"
+  with_items: '{{nginx_vhosts}}'
+  when: item.listen | match("^443")
+
+- name: generate csr
+  command: "openssl req -new -key {{nginx_ssl_path}}/{{item.server_name}}/server.key -out {{nginx_ssl_path}}/{{item.server_name}}/server.csr -subj '/C=JP/ST=Tokyo/L=Tokyo/O=Example Ltd./OU=Web/CN={{item.server_name}}'"
+  args:
+    creates: "{{nginx_ssl_path}}/{{item.server_name}}/server.csr"
+  with_items: '{{nginx_vhosts}}'
+  when: item.listen | match("^443")
+
+- name: generate crt
+  command: "openssl x509 -in {{nginx_ssl_path}}/{{item.server_name}}/server.csr -days 3650 -req -signkey {{nginx_ssl_path}}/{{item.server_name}}/server.key -out {{nginx_ssl_path}}/{{item.server_name}}/server.crt"
+  args:
+    creates: "{{nginx_ssl_path}}/{{item.server_name}}/server.crt"
+  with_items: '{{nginx_vhosts}}'
+  when: item.listen | match("^443")
