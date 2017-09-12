@@ -8,8 +8,6 @@
 Vagrant.configure(2) do |config|
   config.vm.box = "centos72"
 
-  config.vm.box_url = "https://github.com/CommanderK5/packer-centos-template/releases/download/0.7.2/vagrant-centos-7.2.box"
-
   # config.vm.network "forwarded_port", guest: 80, host: 8080
 
   config.vm.network :private_network, ip: "192.168.44.38"
@@ -48,7 +46,7 @@ Vagrant.configure(2) do |config|
   config.vm.provision "ansible_local" do |ansible|
     ansible.playbook        = "/vagrant/ansible/site.yml"
     ansible.verbose         = true
-    ansible.install         = false
+    ansible.install         = true
     ansible.limit           = "all" # or only "nodes" group, etc.
     ansible.inventory_path  = "/vagrant/ansible/hosts"
   end
