@@ -2,6 +2,12 @@
 default-character-set = utf8
 
 [mysqld]
+# デフォルトで利用するストレージエンジンにInnoDBを指定
+default-storage-engine=InnoDB
+
+# InnoDBのファイルをテーブル毎に作成するように指定
+innodb_file_per_table
+
 skip-character-set-client-handshake
 character-set-server = utf8
 collation-server = utf8_general_ci
@@ -9,8 +15,12 @@ init-connect = SET NAMES utf8
 datadir=/var/lib/mysql
 socket=/var/lib/mysql/mysql.sock
 user=mysql
+
 # Disabling symbolic-links is recommended to prevent assorted security risks
 symbolic-links=0
+
+log-error=/var/log/mysqld.log
+pid-file=/var/run/mysqld/mysqld.pid
 
 [mysqldump]
 default-character-set = utf8
@@ -21,3 +31,5 @@ default-character-set = utf8
 [mysqld_safe]
 log-error=/var/log/mysqld.log
 pid-file=/var/run/mysqld/mysqld.pid
+
+!includedir /etc/my.cnf.d
