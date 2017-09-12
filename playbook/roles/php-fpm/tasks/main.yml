@@ -66,7 +66,7 @@
   lineinfile:
     path: /usr/local/lib/php.ini
     regexp: '^;date.timezone ='
-    line: 'date.timezone = {{ timezone }}"'
+    line: 'date.timezone = "{{ timezone }}"'
 
 - name: php-fpm.confを作成
   copy:
