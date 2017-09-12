@@ -20,6 +20,7 @@ $ vagrant up
 ```
 
 ### 環境によって調整
+#### Vagrantfile
 CentOS7.2のboxが予めローカルにある場合は`config.vm.box`にそのboxの名前を記載
 ```
 config.vm.box = "your-name-of-centos7.2"
@@ -35,4 +36,13 @@ config.vm.network :private_network, ip: "192.168.44.38"
 config.vm.synced_folder "./public_html", "/var/www/html"
 ↓
 config.vm.synced_folder "./your/source/dirctory", "/var/www/html"
+```
+
+#### playbook/site.yml
+local.example.jp -> 任意のドメインに変更
+
+```
+root: "/var/www/html/example"
+↓
+root: "/var/www/html/[ローカルのソースがあるディレクトリ名]"
 ```
