@@ -16,6 +16,10 @@ $ vagrant box add centos72 https://github.com/CommanderK5/packer-centos-template
 
 $ git clone git@github.com:egapool/centos72-ansible.git
 $ cd centos72-ansible
+
+// Vagrantfileを環境に合わせて変更 （下記参照
+$ vi Vagrantfile
+
 $ vagrant up
 ```
 
