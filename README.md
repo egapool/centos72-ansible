@@ -3,9 +3,9 @@
 ## 構成
 
 * CentOS 7.2
-* Nginx *
+* Nginx 1.12.1
 * PHP(FPM) 7.1.5
-* MySQL 5.6.*
+* MySQL 5.6.37
 
 ## 使い方
 

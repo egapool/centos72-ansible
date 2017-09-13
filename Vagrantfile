@@ -6,6 +6,7 @@ Vagrant.configure(2) do |config|
 
   # config.vm.network "forwarded_port", guest: 80, host: 8080
 
+  # 必要であれば任意のIPに変更してください
   config.vm.network :private_network, ip: "192.168.44.38"
 
   # config.vm.network "public_network"
