@@ -46,3 +46,11 @@ root: "/var/www/html/example"
 ↓
 root: "/var/www/html/[ローカルのソースがあるディレクトリ名]"
 ```
+
+## 主な設定ファイルの場所
+#### nginx
+`/etc/nginx/nginx.conf`,`/etc/nginx/conf.d/*.conf`
+#### php
+`/usr/local/lib/php.ini`,`/usr/local/etc/php-fpm.conf`,`/usr/local/etc/php-fpm.d/*.conf`
+#### mysql
+`/etc/my.cnf`,`/root/.my.cnf`
