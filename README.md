@@ -35,7 +35,7 @@ config.vm.box = "your-name-of-centos7.2"
 config.vm.network :private_network, ip: "192.168.44.38"
 ```
 
-ソースのディレクトリ対して相対パスを変更
+開発ソースのディレクトリ対して相対パスを変更
 ```
 config.vm.synced_folder "./public_html", "/var/www/html"
 ↓
@@ -44,7 +44,13 @@ config.vm.synced_folder "./your/source/dirctory", "/var/www/html"
 
 #### playbook/site.yml
 local.example.jp -> 任意のドメインに変更
+```
+server_name: "local.example.jp"
+↓
+server_name: "[任意のドメイン]"
+```
 
+Vagrantfileのsynced_folderで指定した開発ソースがあるディレクトリに変更
 ```
 root: "/var/www/html/example"
 ↓
