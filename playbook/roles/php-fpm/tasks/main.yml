@@ -23,6 +23,7 @@
    - libc-client-devel
    - libmcrypt
    - libmcrypt-devel
+   - curl-devel
 
 - file: path=/usr/local/src/phpmodule state=directory
 
