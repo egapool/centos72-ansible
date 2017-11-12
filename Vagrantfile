@@ -1,8 +1,10 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+
+box = "centos/7"
 Vagrant.configure(2) do |config|
-  config.vm.box = "centos72"
+  config.vm.box = box
 
   # config.vm.network "forwarded_port", guest: 80, host: 8080
 
